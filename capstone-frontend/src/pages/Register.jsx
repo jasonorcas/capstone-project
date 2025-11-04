@@ -16,49 +16,7 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
 
     const API_URL = import.meta.env.VITE_API_URL;
-
-    // ---------------------------
-    // Component Styles
-    // ---------------------------
-    const containerStyle = {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "80vh",
-        padding: "1rem",
-    };
-
-    const formContainerStyle = {
-        width: "100%",
-        maxWidth: "400px",
-        backgroundColor: "white",
-        padding: "2rem",
-        borderRadius: "8px",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    };
-
-    const inputStyle = {
-        padding: "10px",
-        margin: "8px 0",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        width: "100%",
-        fontSize: "16px",
-        boxSizing: "border-box",
-    };
-
-    const buttonStyle = {
-        padding: "12px",
-        margin: "10px 0",
-        backgroundColor: "#28a745",
-        color: "white",
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-        fontSize: "16px",
-        width: "100%",
-    };
+    const APP_NAME = import.meta.env.VITE_APP_NAME;
 
     // ---------------------------
     // Handle Form Submission
@@ -109,90 +67,124 @@ export default function Register() {
     };
 
     return (
-        <div style={containerStyle}>
-            <div style={formContainerStyle}>
-                <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-                    Create Account
-                </h2>
+        <div className="auth-container">
+            <div className="auth-card">
+                <div className="auth-header">
+                    <img
+                        src="/logo.png"
+                        alt={`${APP_NAME} Logo`}
+                        className="auth-logo"
+                    />
+                    <h1 className="auth-title">Create Account</h1>
+                    <p className="auth-subtitle">
+                        Join {APP_NAME} and start managing your tasks
+                    </p>
+                </div>
 
-                {error && (
-                    <div
-                        style={{
-                            color: "red",
-                            backgroundColor: "#ffe6e6",
-                            padding: "10px",
-                            borderRadius: "4px",
-                            marginBottom: "1rem",
-                            border: "1px solid red",
-                        }}
-                    >
-                        {error}
-                    </div>
-                )}
+                {error && <div className="error-message">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <input
-                        name="username"
-                        placeholder="Username *"
-                        value={formData.username}
-                        onChange={handleChange}
-                        style={inputStyle}
-                        required
-                    />
-                    <input
-                        name="email"
-                        type="email"
-                        placeholder="Email *"
-                        value={formData.email}
-                        onChange={handleChange}
-                        style={inputStyle}
-                        required
-                    />
-                    <input
-                        name="password"
-                        type="password"
-                        placeholder="Password *"
-                        value={formData.password}
-                        onChange={handleChange}
-                        style={inputStyle}
-                        required
-                    />
-                    <input
-                        name="firstName"
-                        placeholder="First Name"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        style={inputStyle}
-                    />
-                    <input
-                        name="lastName"
-                        placeholder="Last Name"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        style={inputStyle}
-                    />
+                    <div className="form-grid">
+                        <div className="form-group mb-0">
+                            <label className="form-label">First Name</label>
+                            <input
+                                name="firstName"
+                                type="text"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                placeholder="John"
+                                className="form-input"
+                            />
+                        </div>
+                        <div className="form-group mb-0">
+                            <label className="form-label">Last Name</label>
+                            <input
+                                name="lastName"
+                                type="text"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                placeholder="Doe"
+                                className="form-input"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Username *</label>
+                        <input
+                            name="username"
+                            type="text"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Choose a username"
+                            className="form-input"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Email Address *</label>
+                        <input
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="your@email.com"
+                            className="form-input"
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Password *</label>
+                        <input
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Create a strong password"
+                            className="form-input"
+                            required
+                        />
+                        <div
+                            className="text-muted"
+                            style={{ fontSize: "0.75rem", marginTop: "0.5rem" }}
+                        >
+                            Password must be at least 8 characters long
+                        </div>
+                    </div>
+
                     <button
                         type="submit"
-                        style={buttonStyle}
+                        className="btn btn-success btn-full"
                         disabled={loading}
                     >
-                        {loading ? "Creating Account..." : "Register"}
+                        {loading ? (
+                            <>
+                                <span className="loading-spinner"></span>
+                                Creating Account...
+                            </>
+                        ) : (
+                            "Create Account"
+                        )}
                     </button>
                 </form>
 
-                <p style={{ textAlign: "center", marginTop: "1rem" }}>
-                    Already have an account?{" "}
-                    <Link
-                        to="/"
-                        style={{
-                            color: "#007bff",
-                            textDecoration: "none",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Login here
-                    </Link>
-                </p>
+                <div className="text-center mt-6">
+                    <p className="text-muted mb-0">
+                        Already have an account?{" "}
+                        <Link
+                            to="/"
+                            style={{
+                                color: "var(--primary-color)",
+                                textDecoration: "none",
+                                fontWeight: "600",
+                            }}
+                        >
+                            Sign in here
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     );

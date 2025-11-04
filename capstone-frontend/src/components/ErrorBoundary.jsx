@@ -21,34 +21,28 @@ class ErrorBoundary extends Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div
-                    style={{
-                        padding: "2rem",
-                        textAlign: "center",
-                        maxWidth: "500px",
-                        margin: "0 auto",
-                    }}
-                >
-                    <h2 style={{ color: "#dc3545" }}>Something went wrong</h2>
-                    <p style={{ margin: "1rem 0", color: "#666" }}>
-                        {this.state.error?.message ||
-                            "An unexpected error occurred"}
-                    </p>
-                    <button
-                        onClick={() =>
-                            this.setState({ hasError: false, error: null })
-                        }
-                        style={{
-                            padding: "0.5rem 1rem",
-                            backgroundColor: "#007bff",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Try again
-                    </button>
+                <div className="auth-container">
+                    <div className="auth-card text-center">
+                        <div className="empty-state-icon">⚠️</div>
+                        <h2
+                            className="auth-title"
+                            style={{ color: "var(--danger-color)" }}
+                        >
+                            Something went wrong
+                        </h2>
+                        <p className="auth-subtitle mb-6">
+                            {this.state.error?.message ||
+                                "An unexpected error occurred"}
+                        </p>
+                        <button
+                            onClick={() =>
+                                this.setState({ hasError: false, error: null })
+                            }
+                            className="btn btn-primary"
+                        >
+                            Try again
+                        </button>
+                    </div>
                 </div>
             );
         }

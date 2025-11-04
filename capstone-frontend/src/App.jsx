@@ -15,65 +15,73 @@ function App() {
 
     return (
         <ErrorBoundary>
-            <nav className="nav">
-                <div className="nav-container">
-                    <h1 className="nav-logo">{APP_NAME}</h1>
-                    <div className="nav-links">
-                        {user.id ? (
-                            <>
-                                <span className="nav-welcome">
-                                    Welcome, {user.username}
-                                </span>
-                                <Link to="/dashboard" className="nav-link">
-                                    Dashboard
-                                </Link>
-                                <button
-                                    onClick={() => {
-                                        localStorage.removeItem("token");
-                                        localStorage.removeItem("user");
-                                        window.location.href = "/";
-                                    }}
-                                    className="nav-link logout-btn"
-                                >
-                                    Logout
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/" className="nav-link">
-                                    Login
-                                </Link>
-                                <Link to="/register" className="nav-link">
-                                    Register
-                                </Link>
-                            </>
-                        )}
+            <div className="app-container">
+                <nav className="nav">
+                    <div className="nav-container">
+                        <Link to="/" className="nav-brand">
+                            <img
+                                src="/logo.png"
+                                alt={`${APP_NAME} Logo`}
+                                className="nav-logo"
+                            />
+                        </Link>
+                        <div className="nav-links">
+                            {user.id ? (
+                                <>
+                                    <span className="nav-welcome">
+                                        Welcome, {user.username}
+                                    </span>
+                                    <Link to="/dashboard" className="nav-link">
+                                        Dashboard
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            localStorage.removeItem("token");
+                                            localStorage.removeItem("user");
+                                            window.location.href = "/";
+                                        }}
+                                        className="nav-link logout-btn"
+                                    >
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/" className="nav-link">
+                                        Login
+                                    </Link>
+                                    <Link to="/register" className="nav-link">
+                                        Register
+                                    </Link>
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </nav>
+                </nav>
 
-            <main className="main">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <TaskManager />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/tasks"
-                        element={
-                            <ProtectedRoute>
-                                <TaskManager />
-                            </ProtectedRoute>
-                        }
-                    />
-                </Routes>
-            </main>
+                <main className="main-content">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route
+                            path="/dashboard"
+                            element={
+                                <ProtectedRoute>
+                                    <TaskManager />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/tasks"
+                            element={
+                                <ProtectedRoute>
+                                    <TaskManager />
+                                </ProtectedRoute>
+                            }
+                        />
+                    </Routes>
+                </main>
+            </div>
         </ErrorBoundary>
     );
 }

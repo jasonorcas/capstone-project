@@ -11,80 +11,11 @@ export default function TaskManager() {
     const [assignedTo, setAssignedTo] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [activeTab, setActiveTab] = useState("all");
 
     // Get environment variables
     const API_URL = import.meta.env.VITE_API_URL;
     const APP_NAME = import.meta.env.VITE_APP_NAME;
-
-    // ---------------------------
-    // Component Styles
-    // ---------------------------
-    const containerStyle = {
-        padding: "20px",
-        maxWidth: "800px",
-        margin: "0 auto",
-        fontFamily: "Arial, sans-serif",
-    };
-
-    const headerStyle = {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "30px",
-        borderBottom: "1px solid #ddd",
-        paddingBottom: "20px",
-    };
-
-    const formStyle = {
-        backgroundColor: "#f9f9f9",
-        padding: "20px",
-        borderRadius: "8px",
-        marginBottom: "30px",
-    };
-
-    const inputStyle = {
-        padding: "10px",
-        margin: "5px",
-        border: "1px solid #ccc",
-        borderRadius: "4px",
-        width: "100%",
-        fontSize: "16px",
-    };
-
-    const buttonStyle = {
-        padding: "10px 20px",
-        margin: "5px",
-        backgroundColor: "#007bff",
-        color: "white",
-        border: "none",
-        borderRadius: "4px",
-        cursor: "pointer",
-        fontSize: "16px",
-    };
-
-    const taskCardStyle = {
-        backgroundColor: "white",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "15px",
-        margin: "10px 0",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    };
-
-    const statusStyle = {
-        padding: "4px 8px",
-        borderRadius: "4px",
-        fontSize: "12px",
-        fontWeight: "bold",
-        marginLeft: "10px",
-    };
-
-    const statusColors = {
-        Pending: { backgroundColor: "#fff3cd", color: "#856404" },
-        "In Progress": { backgroundColor: "#d1ecf1", color: "#0c5460" },
-        Completed: { backgroundColor: "#d4edda", color: "#155724" },
-        Overdue: { backgroundColor: "#f8d7da", color: "#721c24" },
-    };
 
     // ---------------------------
     // Fetch Tasks Function
@@ -198,7 +129,7 @@ export default function TaskManager() {
                 throw new Error("Failed to update task status");
             }
 
-            await getTasks(); // Refresh the task list
+            await getTasks();
         } catch (error) {
             console.error("Error updating task status:", error);
             setError("Failed to update task status");
@@ -228,7 +159,7 @@ export default function TaskManager() {
                 throw new Error("Failed to delete task");
             }
 
-            await getTasks(); // Refresh the task list
+            await getTasks();
         } catch (error) {
             console.error("Error deleting task:", error);
             setError("Failed to delete task");
@@ -244,6 +175,25 @@ export default function TaskManager() {
         window.location.href = "/";
     };
 
+    // ---------------------------
+    // Filter Tasks by Status
+    // ---------------------------
+    const filteredTasks = tasks.filter((task) => {
+        if (activeTab === "all") return true;
+        return task.status === activeTab;
+    });
+
+    // ---------------------------
+    // Task Statistics
+    // ---------------------------
+    const taskStats = {
+        total: tasks.length,
+        pending: tasks.filter((t) => t.status === "Pending").length,
+        inProgress: tasks.filter((t) => t.status === "In Progress").length,
+        completed: tasks.filter((t) => t.status === "Completed").length,
+        overdue: tasks.filter((t) => t.status === "Overdue").length,
+    };
+
     useEffect(() => {
         getTasks();
     }, []);
@@ -252,194 +202,282 @@ export default function TaskManager() {
     const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
 
     return (
-        <div style={containerStyle}>
-            <div style={headerStyle}>
-                <div>
-                    <h1>{APP_NAME}</h1>
-                    <p>Welcome, {currentUser?.username || "User"}!</p>
+        <div className="dashboard-container">
+            {/* Header Section */}
+            <div className="dashboard-header">
+                <div className="dashboard-brand">
+                    <div>
+                        <h1 className="dashboard-title">{APP_NAME}</h1>
+                        <p className="dashboard-welcome">
+                            Welcome back,{" "}
+                            <strong>{currentUser?.username || "User"}</strong>!
+                            You have {taskStats.total} task
+                            {taskStats.total !== 1 ? "s" : ""} in total.
+                        </p>
+                    </div>
                 </div>
-                <button
-                    onClick={logout}
-                    style={{ ...buttonStyle, backgroundColor: "#dc3545" }}
-                >
+                <button onClick={logout} className="btn btn-outline">
                     Logout
                 </button>
             </div>
 
-            {error && (
-                <div
-                    style={{
-                        color: "red",
-                        backgroundColor: "#ffe6e6",
-                        padding: "10px",
-                        borderRadius: "4px",
-                        marginBottom: "20px",
-                        border: "1px solid red",
-                    }}
-                >
-                    {error}
-                </div>
-            )}
-
-            {/* Add Task Form */}
-            <form onSubmit={addTask} style={formStyle}>
-                <h3>Add New Task</h3>
-                <div style={{ display: "grid", gap: "10px" }}>
-                    <input
-                        type="text"
-                        placeholder="Task Title *"
-                        value={taskName}
-                        onChange={(e) => setTaskName(e.target.value)}
-                        style={inputStyle}
-                        required
-                    />
-                    <textarea
-                        placeholder="Task Description"
-                        value={taskDescription}
-                        onChange={(e) => setTaskDescription(e.target.value)}
-                        style={{ ...inputStyle, minHeight: "60px" }}
-                        maxLength={255}
-                    />
-                    <input
-                        type="datetime-local"
-                        value={taskDeadline}
-                        onChange={(e) => setTaskDeadline(e.target.value)}
-                        style={inputStyle}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Assign to User ID (optional)"
-                        value={assignedTo}
-                        onChange={(e) => setAssignedTo(e.target.value)}
-                        style={inputStyle}
-                    />
-                    <button
-                        type="submit"
-                        style={buttonStyle}
-                        disabled={loading}
+            {/* Stats Cards */}
+            <div className="stats-grid">
+                <div className="card stat-card">
+                    <div
+                        className="stat-number"
+                        style={{ color: "var(--primary-color)" }}
                     >
-                        {loading ? "Adding..." : "Add Task"}
-                    </button>
+                        {taskStats.total}
+                    </div>
+                    <div className="stat-label">Total Tasks</div>
                 </div>
-            </form>
+                <div className="card stat-card">
+                    <div
+                        className="stat-number"
+                        style={{ color: "var(--warning-color)" }}
+                    >
+                        {taskStats.pending}
+                    </div>
+                    <div className="stat-label">Pending</div>
+                </div>
+                <div className="card stat-card">
+                    <div
+                        className="stat-number"
+                        style={{ color: "var(--primary-color)" }}
+                    >
+                        {taskStats.inProgress}
+                    </div>
+                    <div className="stat-label">In Progress</div>
+                </div>
+                <div className="card stat-card">
+                    <div
+                        className="stat-number"
+                        style={{ color: "var(--accent-color)" }}
+                    >
+                        {taskStats.completed}
+                    </div>
+                    <div className="stat-label">Completed</div>
+                </div>
+            </div>
 
-            {/* Tasks List */}
-            <div>
-                <h3>Your Tasks ({tasks.length})</h3>
-                {tasks.length === 0 ? (
-                    <p>No tasks found. Create your first task above!</p>
-                ) : (
-                    tasks.map((task) => (
-                        <div key={task._id} style={taskCardStyle}>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-start",
-                                }}
-                            >
-                                <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: "0 0 10px 0" }}>
-                                        {task.title}
-                                        <span
-                                            style={{
-                                                ...statusStyle,
-                                                ...statusColors[task.status],
-                                            }}
-                                        >
-                                            {task.status}
-                                        </span>
-                                    </h4>
-                                    {task.description && (
-                                        <p
-                                            style={{
-                                                margin: "5px 0",
-                                                color: "#666",
-                                            }}
-                                        >
-                                            {task.description}
-                                        </p>
-                                    )}
-                                    <p
-                                        style={{
-                                            margin: "5px 0",
-                                            fontSize: "14px",
-                                            color: "#888",
-                                        }}
-                                    >
-                                        <strong>Deadline:</strong>{" "}
-                                        {new Date(
-                                            task.deadline
-                                        ).toLocaleString()}
-                                    </p>
-                                    <p
-                                        style={{
-                                            margin: "5px 0",
-                                            fontSize: "14px",
-                                            color: "#888",
-                                        }}
-                                    >
-                                        <strong>UUID:</strong> {task.uuid}
-                                    </p>
-                                    {task.assignedTo && (
-                                        <p
-                                            style={{
-                                                margin: "5px 0",
-                                                fontSize: "14px",
-                                                color: "#888",
-                                            }}
-                                        >
-                                            <strong>Assigned to:</strong>{" "}
-                                            {task.assignedTo.username ||
-                                                task.assignedTo._id}
-                                        </p>
-                                    )}
-                                </div>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "5px",
-                                    }}
-                                >
-                                    <select
-                                        value={task.status}
-                                        onChange={(e) =>
-                                            updateTaskStatus(
-                                                task._id,
-                                                e.target.value
-                                            )
-                                        }
-                                        style={{
-                                            padding: "5px",
-                                            borderRadius: "4px",
-                                        }}
-                                    >
-                                        <option value="Pending">Pending</option>
-                                        <option value="In Progress">
-                                            In Progress
-                                        </option>
-                                        <option value="Completed">
-                                            Completed
-                                        </option>
-                                    </select>
-                                    <button
-                                        onClick={() => deleteTask(task._id)}
-                                        style={{
-                                            ...buttonStyle,
-                                            backgroundColor: "#dc3545",
-                                            padding: "5px 10px",
-                                            fontSize: "12px",
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
+            {/* Error Display */}
+            {error && <div className="error-message">{error}</div>}
+
+            <div className="task-grid">
+                {/* Add Task Form */}
+                <div className="card task-form-container">
+                    <h3 className="task-form-title">Create New Task</h3>
+                    <form onSubmit={addTask}>
+                        <div className="form-group">
+                            <label className="form-label">Task Title *</label>
+                            <input
+                                type="text"
+                                value={taskName}
+                                onChange={(e) => setTaskName(e.target.value)}
+                                placeholder="What needs to be done?"
+                                className="form-input"
+                                required
+                            />
                         </div>
-                    ))
-                )}
+
+                        <div className="form-group">
+                            <label className="form-label">Description</label>
+                            <textarea
+                                value={taskDescription}
+                                onChange={(e) =>
+                                    setTaskDescription(e.target.value)
+                                }
+                                placeholder="Add a description (optional)"
+                                className="form-input form-textarea"
+                                maxLength={255}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Deadline *</label>
+                            <input
+                                type="datetime-local"
+                                value={taskDeadline}
+                                onChange={(e) =>
+                                    setTaskDeadline(e.target.value)
+                                }
+                                className="form-input"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">
+                                Assign To (User ID)
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Optional - enter user ID"
+                                value={assignedTo}
+                                onChange={(e) => setAssignedTo(e.target.value)}
+                                className="form-input"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="btn btn-primary btn-full"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <span className="loading-spinner"></span>
+                                    Creating Task...
+                                </>
+                            ) : (
+                                "Create Task"
+                            )}
+                        </button>
+                    </form>
+                </div>
+
+                {/* Tasks List */}
+                <div className="tasks-container">
+                    {/* Filter Tabs */}
+                    <div className="task-filters">
+                        {[
+                            {
+                                key: "all",
+                                label: "All Tasks",
+                                count: taskStats.total,
+                            },
+                            {
+                                key: "Pending",
+                                label: "Pending",
+                                count: taskStats.pending,
+                            },
+                            {
+                                key: "In Progress",
+                                label: "In Progress",
+                                count: taskStats.inProgress,
+                            },
+                            {
+                                key: "Completed",
+                                label: "Completed",
+                                count: taskStats.completed,
+                            },
+                            {
+                                key: "Overdue",
+                                label: "Overdue",
+                                count: taskStats.overdue,
+                            },
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`btn btn-sm ${
+                                    activeTab === tab.key
+                                        ? "btn-primary"
+                                        : "btn-outline"
+                                }`}
+                                style={{ borderRadius: "20px" }}
+                            >
+                                {tab.label} ({tab.count})
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tasks List */}
+                    {filteredTasks.length === 0 ? (
+                        <div className="card empty-state">
+                            <div className="empty-state-icon">📝</div>
+                            <h3 className="mb-4">No tasks found</h3>
+                            <p className="text-muted">
+                                {activeTab === "all"
+                                    ? "Get started by creating your first task!"
+                                    : `No ${activeTab.toLowerCase()} tasks found`}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="tasks-container">
+                            {filteredTasks.map((task) => (
+                                <div key={task._id} className="card task-card">
+                                    <div className="task-header">
+                                        <div style={{ flex: 1 }}>
+                                            <h4 className="task-title">
+                                                {task.title}
+                                                <span
+                                                    className={`status-badge status-${task.status
+                                                        .toLowerCase()
+                                                        .replace(" ", "-")}`}
+                                                >
+                                                    {task.status}
+                                                </span>
+                                            </h4>
+                                            {task.description && (
+                                                <p className="task-description">
+                                                    {task.description}
+                                                </p>
+                                            )}
+                                            <div className="task-meta">
+                                                <div className="task-meta-item">
+                                                    <span>📅</span>
+                                                    <span>
+                                                        {new Date(
+                                                            task.deadline
+                                                        ).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                                <div className="task-meta-item">
+                                                    <span>🆔</span>
+                                                    <span>{task.uuid}</span>
+                                                </div>
+                                                {task.assignedTo && (
+                                                    <div className="task-meta-item">
+                                                        <span>👤</span>
+                                                        <span>
+                                                            {task.assignedTo
+                                                                .username ||
+                                                                task.assignedTo
+                                                                    ._id}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="task-actions">
+                                            <select
+                                                value={task.status}
+                                                onChange={(e) =>
+                                                    updateTaskStatus(
+                                                        task._id,
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="form-input form-select"
+                                                style={{ fontSize: "0.875rem" }}
+                                            >
+                                                <option value="Pending">
+                                                    Pending
+                                                </option>
+                                                <option value="In Progress">
+                                                    In Progress
+                                                </option>
+                                                <option value="Completed">
+                                                    Completed
+                                                </option>
+                                            </select>
+                                            <button
+                                                onClick={() =>
+                                                    deleteTask(task._id)
+                                                }
+                                                className="btn btn-danger btn-sm"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

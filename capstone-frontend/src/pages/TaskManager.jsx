@@ -207,10 +207,11 @@ export default function TaskManager() {
             <div className="dashboard-header">
                 <div className="dashboard-brand">
                     <div>
-                        <h1 className="dashboard-title">{APP_NAME}</h1>
-                        <p className="dashboard-welcome">
+                        <h1 className="dashboard-title">
                             Welcome back,{" "}
-                            <strong>{currentUser?.username || "User"}</strong>!
+                            <strong>{currentUser?.firstName || "User"}</strong>
+                        </h1>
+                        <p className="dashboard-welcome">
                             You have {taskStats.total} task
                             {taskStats.total !== 1 ? "s" : ""} in total.
                         </p>

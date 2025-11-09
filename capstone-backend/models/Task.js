@@ -2,20 +2,6 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema(
     {
-        // MongoDB internal ObjectId
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            auto: true,
-        },
-
-        // Public-facing UUID (e.g., TASK-000001)
-        uuid: {
-            type: String,
-            unique: true,
-            index: true,
-            immutable: true,
-        },
-
         // Task title (required, max 60 chars)
         title: {
             type: String,
@@ -45,12 +31,13 @@ const taskSchema = new mongoose.Schema(
             default: "Pending",
         },
 
-        // Optional assigned user (who the task is given to)
-        assignedTo: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null,
-        },
+        // Support multiple assigned users
+        assignedTo: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
 
         // The creator of the task
         createdBy: {
@@ -59,33 +46,73 @@ const taskSchema = new mongoose.Schema(
             required: true,
             immutable: true,
         },
+
+        // Enhanced Comments system with reply support
+        comments: [
+            {
+                user: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                content: {
+                    type: String,
+                    required: true,
+                    trim: true,
+                    maxlength: 1000,
+                },
+                parentCommentId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    default: null,
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+                updatedAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+
+        // UUID field
+        uuid: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
     },
     { timestamps: true }
 );
 
-// Auto-generate the UUID before saving
+// Auto-generate UUID before saving
 taskSchema.pre("save", async function (next) {
     if (!this.uuid) {
         try {
-            // Use a more reliable method to generate sequential UUID
+            // Get the highest existing UUID number
             const lastTask = await mongoose
                 .model("Task")
-                .findOne()
+                .findOne({ uuid: { $regex: /^TASK-\d+$/ } })
                 .sort({ createdAt: -1 });
 
-            const nextNumber = lastTask
-                ? parseInt(lastTask.uuid.split("-")[1]) + 1
-                : 1;
+            let nextNumber = 1;
+            if (lastTask && lastTask.uuid) {
+                const lastNumber = parseInt(lastTask.uuid.split("-")[1]);
+                nextNumber = isNaN(lastNumber) ? 1 : lastNumber + 1;
+            }
+
             const paddedNumber = String(nextNumber).padStart(6, "0");
             this.uuid = `TASK-${paddedNumber}`;
         } catch (error) {
-            // Fallback if there's an error
-            const randomNum = Math.floor(Math.random() * 1000000);
-            this.uuid = `TASK-${String(randomNum).padStart(6, "0")}`;
+            console.error("Error generating UUID:", error);
+            // Fallback to timestamp-based ID
+            const timestamp = Date.now().toString().slice(-6);
+            this.uuid = `TASK-${timestamp}`;
         }
     }
 
-    // Automatically mark overdue if deadline has passed
+    // Auto-check for overdue status
     if (
         this.deadline &&
         this.deadline < new Date() &&
@@ -94,10 +121,20 @@ taskSchema.pre("save", async function (next) {
         this.status = "Overdue";
     }
 
+    // Update comment updatedAt when comments are modified
+    if (this.isModified("comments") && this.comments.length > 0) {
+        const now = new Date();
+        this.comments.forEach((comment) => {
+            if (comment.isModified) {
+                comment.updatedAt = now;
+            }
+        });
+    }
+
     next();
 });
 
-// Also check for overdue status whenever document is retrieved
+// Also check for overdue status when document is retrieved
 taskSchema.post("init", function (doc) {
     if (
         doc.deadline &&
@@ -107,5 +144,23 @@ taskSchema.post("init", function (doc) {
         doc.status = "Overdue";
     }
 });
+
+// Virtual for getting top-level comments (not replies)
+taskSchema.virtual("topLevelComments").get(function () {
+    return this.comments.filter((comment) => !comment.parentCommentId);
+});
+
+// Method to get replies for a specific comment
+taskSchema.methods.getCommentReplies = function (commentId) {
+    return this.comments.filter(
+        (comment) =>
+            comment.parentCommentId &&
+            comment.parentCommentId.toString() === commentId.toString()
+    );
+};
+
+// Index for better comment query performance
+taskSchema.index({ "comments.parentCommentId": 1 });
+taskSchema.index({ "comments.createdAt": -1 });
 
 module.exports = mongoose.model("Task", taskSchema);

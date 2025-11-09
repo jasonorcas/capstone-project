@@ -5,11 +5,11 @@ const userSchema = new mongoose.Schema(
     {
         username: {
             type: String,
-            required: true,
+            required: [true, "Username is required"],
             unique: true,
             trim: true,
-            minlength: 3,
-            maxlength: 30,
+            minlength: [3, "Username must be at least 3 characters"],
+            maxlength: [30, "Username cannot exceed 30 characters"],
             match: [
                 /^[a-zA-Z0-9_]+$/,
                 "Username can only contain letters, numbers, and underscores",
@@ -17,19 +17,19 @@ const userSchema = new mongoose.Schema(
         },
         email: {
             type: String,
-            required: true,
+            required: [true, "Email is required"],
             unique: true,
             lowercase: true,
             trim: true,
             match: [
-                /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                "Please enter a valid email",
+                /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                "Please enter a valid email address",
             ],
         },
         password: {
             type: String,
-            required: true,
-            minlength: 8,
+            required: [true, "Password is required"],
+            minlength: [8, "Password must be at least 8 characters long"],
             validate: {
                 validator: function (password) {
                     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(
@@ -37,18 +37,18 @@ const userSchema = new mongoose.Schema(
                     );
                 },
                 message:
-                    "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 symbol",
+                    "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special symbol",
             },
         },
         firstName: {
             type: String,
             trim: true,
-            maxlength: 50,
+            maxlength: [50, "First name cannot exceed 50 characters"],
         },
         lastName: {
             type: String,
             trim: true,
-            maxlength: 50,
+            maxlength: [50, "Last name cannot exceed 50 characters"],
         },
         role: {
             type: String,
@@ -66,16 +66,23 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Hash password before saving
+// Virtual full name getter
+userSchema.virtual("fullName").get(function () {
+    return (
+        [this.firstName, this.lastName].filter(Boolean).join(" ") ||
+        this.username
+    );
+});
+
+// Password hashing middleware
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
-
     try {
         const salt = await bcrypt.genSalt(12);
         this.password = await bcrypt.hash(this.password, salt);
         next();
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        next(err);
     }
 });
 
@@ -84,14 +91,14 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Remove password from JSON output
+// Hide password in JSON
 userSchema.methods.toJSON = function () {
     const user = this.toObject();
     delete user.password;
     return user;
 };
 
-// Index for better query performance
+// Indexes for optimization
 userSchema.index({ email: 1 });
 userSchema.index({ username: 1 });
 userSchema.index({ createdAt: -1 });

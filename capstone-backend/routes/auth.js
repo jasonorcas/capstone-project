@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
             { expiresIn: "24h" }
         );
 
-        // Return user data without password
+        // Return user data without password (fullName will be included via toJSON)
         const userResponse = user.toJSON();
 
         res.status(201).json({
@@ -118,7 +118,7 @@ router.post("/login", async (req, res) => {
 
         res.json({
             token,
-            user: user.toJSON(),
+            user: user.toJSON(), // fullName included via toJSON
         });
     } catch (err) {
         console.error("❌ Login error:", err);
@@ -136,7 +136,7 @@ router.get("/me", verifyToken, async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.json(user.toJSON());
+        res.json(user.toJSON()); // fullName included via toJSON
     } catch (err) {
         console.error("❌ Get profile error:", err);
         res.status(500).json({ message: "Failed to fetch user profile" });
@@ -144,29 +144,187 @@ router.get("/me", verifyToken, async (req, res) => {
 });
 
 // ---------------------------
-// UPDATE user profile
+// UPDATE user profile (Enhanced version)
 // ---------------------------
 router.patch("/profile", verifyToken, async (req, res) => {
     try {
-        const { firstName, lastName } = req.body;
+        const { firstName, lastName, email, username } = req.body;
 
+        // Build update data object
+        const updateData = {};
+        if (firstName !== undefined) updateData.firstName = firstName;
+        if (lastName !== undefined) updateData.lastName = lastName;
+
+        // Only check for email/username uniqueness if they're being updated
+        if (email !== undefined || username !== undefined) {
+            const existingUserConditions = { _id: { $ne: req.user.id } };
+            const orConditions = [];
+
+            if (email !== undefined) {
+                updateData.email = email.toLowerCase();
+                orConditions.push({ email: email.toLowerCase() });
+            }
+            if (username !== undefined) {
+                updateData.username = username;
+                orConditions.push({ username });
+            }
+
+            if (orConditions.length > 0) {
+                existingUserConditions.$or = orConditions;
+
+                const existingUser = await User.findOne(existingUserConditions);
+                if (existingUser) {
+                    return res.status(400).json({
+                        message: "Email or username already exists",
+                    });
+                }
+            }
+        }
+
+        // Check if there's anything to update
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({
+                message: "No fields to update",
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(req.user.id, updateData, {
+            new: true,
+            runValidators: true,
+            context: "query", // This helps with unique validation
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            message: "Profile updated successfully",
+            user: user.toJSON(), // fullName included via toJSON
+        });
+    } catch (err) {
+        console.error("❌ Update profile error:", err);
+
+        // Handle validation errors
+        if (err.name === "ValidationError") {
+            const errors = Object.values(err.errors).map(
+                (error) => error.message
+            );
+            return res.status(400).json({
+                message: errors.join(", "),
+            });
+        }
+
+        // Handle duplicate key errors
+        if (err.code === 11000) {
+            const field = Object.keys(err.keyPattern)[0];
+            return res.status(400).json({
+                message: `${field} already exists`,
+            });
+        }
+
+        res.status(500).json({ message: "Failed to update profile" });
+    }
+});
+
+// ---------------------------
+// CHANGE user password
+// ---------------------------
+router.patch("/change-password", verifyToken, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        // Validate input
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                message: "Current password and new password are required",
+            });
+        }
+
+        // Get user with password field
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({
+                message: "Current password is incorrect",
+            });
+        }
+
+        // Update password
+        user.password = newPassword;
+        await user.save();
+
+        res.json({
+            message: "Password updated successfully",
+        });
+    } catch (err) {
+        console.error("❌ Change password error:", err);
+
+        if (err.name === "ValidationError") {
+            const errors = Object.values(err.errors).map(
+                (error) => error.message
+            );
+            return res.status(400).json({
+                message: errors.join(", "),
+            });
+        }
+
+        res.status(500).json({ message: "Failed to change password" });
+    }
+});
+
+// ---------------------------
+// DEACTIVATE user account
+// ---------------------------
+router.patch("/deactivate", verifyToken, async (req, res) => {
+    try {
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { firstName, lastName },
-            { new: true, runValidators: true }
+            { isActive: false },
+            { new: true }
         );
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        res.json(user.toJSON());
+        res.json({
+            message: "Account deactivated successfully",
+        });
     } catch (err) {
-        console.error("❌ Update profile error:", err);
-        if (err.name === "ValidationError") {
-            return res.status(400).json({ message: err.message });
-        }
-        res.status(500).json({ message: "Failed to update profile" });
+        console.error("❌ Deactivate account error:", err);
+        res.status(500).json({ message: "Failed to deactivate account" });
+    }
+});
+
+// ---------------------------
+// GET all users for assignment dropdown
+// ---------------------------
+router.get("/users", verifyToken, async (req, res) => {
+    try {
+        const users = await User.find({ isActive: true })
+            .select("username firstName lastName email")
+            .sort({ firstName: 1, lastName: 1 });
+
+        // Manually add fullName to each user
+        const usersWithFullName = users.map((user) => {
+            const userObj = user.toJSON();
+            return userObj;
+        });
+
+        console.log(
+            `📋 Found ${usersWithFullName.length} active users for assignment`
+        );
+
+        res.json(usersWithFullName);
+    } catch (err) {
+        console.error("❌ Get users error:", err);
+        res.status(500).json({ message: "Failed to fetch users" });
     }
 });
 

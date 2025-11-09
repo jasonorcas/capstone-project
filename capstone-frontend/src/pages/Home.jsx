@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 // ---------------------------
 // Home/Login Page Component
 // ---------------------------
-export default function Home() {
+export default function Home({ setUser }) {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -36,6 +36,12 @@ export default function Home() {
 
             localStorage.setItem("token", result.token);
             localStorage.setItem("user", JSON.stringify(result.user));
+
+            // Update user state in App component
+            if (setUser) {
+                setUser(result.user);
+            }
+
             window.location.href = "/dashboard";
         } catch (err) {
             setError(err.message || "Login failed. Please try again.");

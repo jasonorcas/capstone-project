@@ -189,6 +189,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     min-height: calc(100vh - 80px);
+    width: 100%;
 }
 
 .dashboard-header {
@@ -198,6 +199,7 @@ body {
     margin-bottom: 2rem;
     flex-wrap: wrap;
     gap: 1rem;
+    width: 100%;
 }
 
 .dashboard-brand {
@@ -226,6 +228,23 @@ body {
     margin: 0;
 }
 
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* ---------------------------
+* Task Container
+* --------------------------- */
+.task-container {
+    width: 100%;
+}
+
+.tasks-section {
+    width: 100%;
+}
+
 /* ---------------------------
 * Card Components
 * --------------------------- */
@@ -236,6 +255,7 @@ body {
     box-shadow: var(--shadow);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
+    width: 100%;
 }
 
 .card:hover {
@@ -248,6 +268,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
+    width: 100%;
 }
 
 .stat-card {
@@ -269,33 +290,12 @@ body {
 /* ---------------------------
 * Task Management Styles
 * --------------------------- */
-.task-form-container {
-    margin-bottom: 2rem;
-}
-
-.task-form-title {
-    margin-bottom: 1.5rem;
-    color: var(--text-dark);
-}
-
-.task-grid {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    align-items: start;
-}
-
-.tasks-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
 .task-filters {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .task-card {
@@ -304,6 +304,7 @@ body {
     padding: 1.25rem;
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
+    width: 100%;
 }
 
 .task-card:hover {
@@ -315,6 +316,13 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 0.75rem;
+    width: 100%;
+    gap: 1rem;
+}
+
+.task-content {
+    flex: 1;
+    min-width: 0;
 }
 
 .task-title {
@@ -324,12 +332,15 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
+    width: 100%;
 }
 
 .task-description {
     margin: 0.5rem 0;
     color: var(--text-light);
     line-height: 1.5;
+    width: 100%;
 }
 
 .task-meta {
@@ -337,6 +348,7 @@ body {
     gap: 1.5rem;
     flex-wrap: wrap;
     margin-top: 1rem;
+    width: 100%;
 }
 
 .task-meta-item {
@@ -352,6 +364,70 @@ body {
     flex-direction: column;
     gap: 0.5rem;
     min-width: 140px;
+    flex-shrink: 0;
+}
+
+/* ---------------------------
+* Edit Button Styles
+* --------------------------- */
+.btn-edit {
+    background: var(--warning-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    min-height: 36px;
+    line-height: 1;
+}
+
+.btn-edit:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit:active {
+    transform: translateY(0);
+}
+
+.btn-edit:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---------------------------
+* Status Select in Task Cards
+* --------------------------- */
+.status-select {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 120px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.status-select:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
 }
 
 /* ---------------------------
@@ -359,6 +435,7 @@ body {
 * --------------------------- */
 .form-group {
     margin-bottom: 1.5rem;
+    width: 100%;
 }
 
 .form-label {
@@ -389,21 +466,49 @@ body {
 .form-input:disabled {
     background-color: #f8fafc;
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .form-textarea {
     min-height: 100px;
     resize: vertical;
     font-family: inherit;
+    width: 100%;
 }
 
+/* ---------------------------
+* FORM SELECT STYLES - DROPDOWN FIXED
+* --------------------------- */
 .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+    font-family: inherit;
     appearance: none;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
+    background-position: right 1rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
     padding-right: 2.5rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-select:disabled {
+    background-color: #f8fafc;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .form-grid {
@@ -411,6 +516,56 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+/* ---------------------------
+* Deadline Input Styles
+* --------------------------- */
+.deadline-input-container {
+    position: relative;
+    width: 100%;
+}
+
+.deadline-hint {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.input-hint {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin: 0.5rem 0 0 0;
+    line-height: 1.4;
+}
+
+/* ---------------------------
+* Improved DateTime Input Styles
+* --------------------------- */
+.datetime-inputs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.date-input-group,
+.time-input-group {
+    flex: 1;
+}
+
+.datetime-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.date-input,
+.time-input {
+    width: 100%;
 }
 
 /* ---------------------------
@@ -430,6 +585,7 @@ body {
     gap: 0.5rem;
     justify-content: center;
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .btn:disabled {
@@ -480,6 +636,15 @@ body {
     color: white;
 }
 
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #545b62;
+}
+
 .btn-sm {
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
@@ -499,6 +664,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .status-pending {
@@ -560,11 +726,13 @@ body {
     margin-bottom: 1.5rem;
     border: 1px solid #fecaca;
     font-size: 0.9rem;
+    width: 100%;
 }
 
 .empty-state {
     text-align: center;
     padding: 3rem 2rem;
+    width: 100%;
 }
 
 .empty-state-icon {
@@ -595,6 +763,748 @@ body {
 }
 
 /* ---------------------------
+* Modal Styles - FIXED SCROLLING
+* --------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden; /* Changed from auto to hidden */
+    animation: modalSlideIn 0.3s ease-out;
+    border: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: white;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: var(--text-dark);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto; /* Enable scrolling only for body */
+    flex: 1;
+    position: relative;
+}
+
+/* Modal-specific error message */
+.modal-error-message {
+    color: var(--danger-color);
+    background-color: #fef2f2;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #fecaca;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.task-detail-section {
+    margin-bottom: 2rem;
+}
+
+.task-detail-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: white;
+    flex-shrink: 0;
+}
+
+/* ---------------------------
+* Task Form Styles
+* --------------------------- */
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    min-height: 0; /* Important for flex scrolling */
+}
+
+/* ---------------------------
+* Comments Styles - FIXED SCROLLING
+* --------------------------- */
+.comments-section {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    max-height: 300px; /* Limit comments height */
+    overflow-y: auto; /* Enable scrolling for comments */
+}
+
+.comment-item {
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.comment-date {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.comment-content {
+    margin: 0.5rem 0;
+    line-height: 1.4;
+    color: var(--text-dark);
+}
+
+.comment-edit-mode {
+    margin-top: 0.5rem;
+}
+
+.comment-edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.add-comment-form {
+    margin-bottom: 1.5rem;
+}
+
+.add-comment-form textarea {
+    margin-bottom: 0.5rem;
+}
+
+.no-comments {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* ---------------------------
+* Comment Menu Styles - FIXED
+* --------------------------- */
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.comment-author-info {
+    flex: 1;
+}
+
+.comment-menu {
+    position: relative;
+}
+
+.comment-menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.comment-menu-btn:hover {
+    background: var(--border-color);
+    color: var(--text-dark);
+}
+
+.comment-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    min-width: 120px;
+}
+
+.comment-menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.comment-menu-dropdown button:hover {
+    background: var(--border-color);
+}
+
+.comment-menu-dropdown button:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.comment-menu-dropdown button:last-child {
+    border-radius: 0 0 8px 8px;
+    color: var(--danger-color);
+}
+
+.comment-menu-dropdown button:last-child:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* ---------------------------
+* Reply Form Styles
+* --------------------------- */
+.reply-form {
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--border-color);
+}
+
+.reply-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Comment Reply Styling */
+.comment-reply {
+    margin-left: 2rem;
+    border-left: 2px solid var(--border-color);
+    padding-left: 1rem;
+}
+
+/* ---------------------------
+* Reference ID Styles
+* --------------------------- */
+.reference-id {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    margin-left: 0.5rem;
+}
+
+.reference-id-display {
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: monospace;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* ---------------------------
+* Tasks List Layout
+* --------------------------- */
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* ---------------------------
+* CRITICAL DROPDOWN FIXES
+* --------------------------- */
+
+/* Ensure dropdowns appear above modal content */
+.modal-content {
+    isolation: isolate;
+}
+
+.modal-body .form-group {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix for datetime-local input positioning */
+input[type="datetime-local"] {
+    position: relative;
+    z-index: 2;
+}
+
+/* Ensure select dropdowns have proper z-index */
+.form-select {
+    z-index: 10;
+    position: relative;
+}
+
+/* Fix for dropdown options in modals */
+select.form-select {
+    min-height: 48px;
+    line-height: 1.5;
+}
+
+/* Ensure dropdown appears above everything in modal */
+.modal-body .form-select:focus {
+    z-index: 100;
+}
+
+/* Fix for dropdown arrow positioning */
+.form-select {
+    background-position: right 1rem center;
+    background-size: 1.25em 1.25em;
+}
+
+/* Cross-browser fixes */
+select.form-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+select.form-select::-ms-expand {
+    display: none;
+}
+
+/* ---------------------------
+* Profile Page Styles
+* --------------------------- */
+.profile-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.profile-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.profile-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.profile-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.profile-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+.profile-form input.disabled-field {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.field-note {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+/* ---------------------------
+* Alert Styles
+* --------------------------- */
+.alert {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ---------------------------
+* Form Actions
+* --------------------------- */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+/* ---------------------------
+* Tab Styles
+* --------------------------- */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    color: var(--primary-color);
+}
+
+.tab.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* ---------------------------
+* Notification Badge Styles
+* --------------------------- */
+.update-notification-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.5rem;
+    animation: pulse 2s infinite;
+    box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+}
+
+.global-notification-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 1rem;
+    animation: pulse 2s infinite;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+/* Update Button Style */
+.btn-update {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    min-height: 36px;
+    line-height: 1;
+    animation: pulse 2s infinite;
+}
+
+.btn-update:hover {
+    background: linear-gradient(135deg, #ff5252, #e53935);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+}
+
+/* Task card with updates */
+.task-card.has-updates {
+    border-left: 4px solid #ff6b6b;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 107, 107, 0.05) 0%,
+        transparent 100%
+    );
+}
+
+/* ---------------------------
+* Delete Confirmation Styles
+* --------------------------- */
+.delete-confirmation {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.delete-confirmation p {
+    margin: 0 0 1rem 0;
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.delete-confirmation-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.delete-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+}
+
+/* ---------------------------
+* User Assignment Styles
+* --------------------------- */
+.user-assignment-container {
+    position: relative;
+    width: 100%;
+}
+
+.selected-users-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    min-height: 2.5rem;
+}
+
+.user-chip {
+    display: flex;
+    align-items: center;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    gap: 0.5rem;
+}
+
+.user-chip-name {
+    white-space: nowrap;
+}
+
+.user-chip-remove {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.user-chip-remove:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.user-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.user-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.user-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 0.25rem;
+}
+
+.user-dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.user-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown-item:hover {
+    background: #f8fafc;
+}
+
+.user-dropdown-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-dropdown-name {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.user-dropdown-email {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.125rem;
+}
+
+/* ---------------------------
 * Responsive Design
 * --------------------------- */
 @media (max-width: 768px) {
@@ -614,8 +1524,13 @@ body {
         align-items: stretch;
     }
 
-    .task-grid {
-        grid-template-columns: 1fr;
+    .dashboard-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .dashboard-actions .btn {
+        width: 100%;
     }
 
     .stats-grid {
@@ -637,6 +1552,148 @@ body {
     .auth-card {
         padding: 1.5rem;
     }
+
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 1rem;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .task-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .task-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-direction: row;
+    }
+
+    .btn-edit {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .status-select {
+        width: 100%;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .comment-actions {
+        flex-direction: column;
+    }
+
+    .comment-edit-actions {
+        flex-direction: column;
+    }
+
+    .reference-id {
+        margin-left: 0;
+        margin-top: 0.25rem;
+    }
+
+    /* Mobile comments section */
+    .comments-section {
+        max-height: 200px;
+    }
+
+    /* Profile responsive */
+    .profile-form {
+        max-width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .tabs {
+        flex-direction: column;
+        border-bottom: none;
+        gap: 0.5rem;
+    }
+
+    .tab {
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        text-align: left;
+    }
+
+    .tab.active {
+        border-bottom-color: transparent;
+        border-left-color: var(--primary-color);
+    }
+
+    /* Improved DateTime Input Responsive */
+    .datetime-inputs {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .date-input-group,
+    .time-input-group {
+        flex: none;
+    }
+
+    /* Mobile dropdown fixes */
+    .form-grid .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    select.form-select {
+        min-height: 44px; /* Better touch targets on mobile */
+    }
+
+    /* Notification badges mobile */
+    .update-notification-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .global-notification-badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .btn-update {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .reply-form {
+        padding-left: 0.5rem;
+    }
+
+    /* User assignment mobile */
+    .selected-users-chips {
+        gap: 0.375rem;
+    }
+
+    .user-chip {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .user-dropdown {
+        max-height: 150px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -653,5 +1710,429 @@ body {
     .task-meta {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .modal-content {
+        margin: 0.5rem;
+    }
+
+    .task-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .btn-edit {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    /* Profile mobile */
+    .profile-form input {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+/* ---------------------------
+* Ensure Full Width on All Elements
+* --------------------------- */
+.card {
+    width: 100%;
+}
+
+.empty-state {
+    width: 100%;
+}
+
+.error-message {
+    width: 100%;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* ---------------------------
+* Improved Form Grid Alignment
+* --------------------------- */
+.form-grid-aligned {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    align-items: start;
+}
+
+.form-grid-aligned .form-group {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.datetime-input {
+    min-height: 48px;
+}
+
+.status-select-aligned {
+    min-height: 48px;
+}
+
+/* Ensure consistent height for aligned inputs */
+.form-grid-aligned .form-input,
+.form-grid-aligned .form-select {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+/* ---------------------------
+* Enhanced Comment Menu - FIXED
+* --------------------------- */
+.comment-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.comment-menu-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.comment-menu-btn:hover {
+    background: var(--border-color);
+    color: var(--text-dark);
+}
+
+.comment-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    min-width: 120px;
+    margin-top: 0.25rem;
+}
+
+.comment-menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    color: var(--text-dark);
+}
+
+.comment-menu-dropdown button:hover {
+    background: var(--border-color);
+}
+
+.comment-menu-dropdown button:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.comment-menu-dropdown button:last-child {
+    border-radius: 0 0 8px 8px;
+    color: var(--danger-color);
+}
+
+.comment-menu-dropdown button:last-child:hover {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* ---------------------------
+* Modal Error Scroll Fix
+* --------------------------- */
+.modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+.modal-error-message {
+    color: var(--danger-color);
+    background-color: #fef2f2;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #fecaca;
+    font-size: 0.9rem;
+    width: 100%;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------------------------
+* Responsive Improvements
+* --------------------------- */
+@media (max-width: 768px) {
+    .form-grid-aligned {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-grid-aligned .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .comment-menu-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 12px 12px 0 0;
+        margin-top: 0;
+    }
+
+    .comment-menu-dropdown button {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* ---------------------------
+* Fixed Update Button (No Flashing)
+* --------------------------- */
+.btn-update {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    text-align: center;
+    min-height: 36px;
+    line-height: 1;
+}
+
+.btn-update:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove the pulse animation from task cards */
+.task-card.has-updates .btn-update {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    animation: pulse 2s infinite;
+}
+
+.task-card.has-updates .btn-update:hover {
+    background: linear-gradient(135deg, #ff5252, #e53935);
+}
+
+/* ---------------------------
+* Comments Modal Styles
+* --------------------------- */
+.comments-modal {
+    max-width: 800px;
+    max-height: 90vh;
+}
+
+.comments-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.task-info-section {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.task-info-section h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.task-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.task-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.task-info-item strong {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.task-info-item span {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.comments-section-full {
+    flex: 1;
+}
+
+.comments-section-full h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.comments-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f8fafc;
+}
+
+/* Enhanced comment items for modal */
+.comments-list .comment-item {
+    background: white;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.comments-list .comment-reply {
+    margin-left: 2rem;
+    border-left: 3px solid var(--border-color);
+    padding-left: 1rem;
+}
+
+/* ---------------------------
+* Task Actions Layout
+* --------------------------- */
+.task-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.task-actions .btn-update {
+    order: 1;
+}
+
+.task-actions .btn-outline {
+    order: 2;
+}
+
+.task-actions .btn-danger {
+    order: 3;
+}
+
+/* ---------------------------
+* Responsive Comments Modal
+* --------------------------- */
+@media (max-width: 768px) {
+    .comments-modal {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+
+    .task-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .comments-list {
+        max-height: 300px;
+    }
+
+    .comments-list .comment-reply {
+        margin-left: 1rem;
+    }
+
+    .task-actions {
+        min-width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .task-actions .btn-update,
+    .task-actions .btn-outline,
+    .task-actions .btn-danger {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .comments-modal {
+        margin: 0.5rem;
+    }
+
+    .task-info-section {
+        padding: 1rem;
+    }
+
+    .comments-list {
+        max-height: 250px;
+        padding: 0.5rem;
+    }
+
+    .task-actions {
+        flex-direction: column;
+    }
+
+    .task-actions .btn-update,
+    .task-actions .btn-outline,
+    .task-actions .btn-danger {
+        width: 100%;
     }
 }

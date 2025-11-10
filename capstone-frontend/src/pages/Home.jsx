@@ -9,6 +9,7 @@ export default function Home({ setUser }) {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const API_URL = import.meta.env.VITE_API_URL;
     const APP_NAME = import.meta.env.VITE_APP_NAME;
@@ -50,6 +51,13 @@ export default function Home({ setUser }) {
         }
     };
 
+    // ---------------------------
+    // Toggle Password Visibility
+    // ---------------------------
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <div className="auth-container">
             <div className="auth-card">
@@ -83,15 +91,28 @@ export default function Home({ setUser }) {
 
                     <div className="form-group">
                         <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            className="form-input"
-                            required
-                            disabled={loading}
-                        />
+                        <div className="password-input-container">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                className="form-input"
+                                required
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={togglePasswordVisibility}
+                            >
+                                <span
+                                    className={`eye-icon ${
+                                        showPassword ? "eye-slash" : "eye-open"
+                                    }`}
+                                ></span>
+                            </button>
+                        </div>
                     </div>
 
                     <button

@@ -6,11 +6,16 @@ export default function Register({ setUser }) {
         username: "",
         email: "",
         password: "",
+        confirmPassword: "",
         firstName: "",
         lastName: "",
     });
     const [errors, setErrors] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [showPasswords, setShowPasswords] = useState({
+        password: false,
+        confirmPassword: false,
+    });
 
     const API_URL = import.meta.env.VITE_API_URL;
     const APP_NAME = import.meta.env.VITE_APP_NAME;
@@ -43,6 +48,12 @@ export default function Register({ setUser }) {
             );
         }
 
+        if (!formData.confirmPassword.trim()) {
+            newErrors.push("Please confirm your password.");
+        } else if (formData.password !== formData.confirmPassword) {
+            newErrors.push("Passwords do not match.");
+        }
+
         return newErrors;
     };
 
@@ -62,7 +73,13 @@ export default function Register({ setUser }) {
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                }),
             });
 
             const result = await response.json();
@@ -110,6 +127,13 @@ export default function Register({ setUser }) {
             ...formData,
             [e.target.name]: e.target.value,
         });
+    };
+
+    const togglePasswordVisibility = (field) => {
+        setShowPasswords((prev) => ({
+            ...prev,
+            [field]: !prev[field],
+        }));
     };
 
     return (
@@ -200,14 +224,71 @@ export default function Register({ setUser }) {
 
                     <div className="form-group">
                         <label className="form-label">Password *</label>
-                        <input
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Create a strong password"
-                            className="form-input"
-                        />
+                        <div className="password-input-container">
+                            <input
+                                name="password"
+                                type={
+                                    showPasswords.password ? "text" : "password"
+                                }
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Create a strong password"
+                                className="form-input"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() =>
+                                    togglePasswordVisibility("password")
+                                }
+                            >
+                                <span
+                                    className={`eye-icon ${
+                                        showPasswords.password
+                                            ? "eye-slash"
+                                            : "eye-open"
+                                    }`}
+                                ></span>
+                            </button>
+                        </div>
+                        <small className="field-note">
+                            Password must be at least 8 characters long and
+                            contain at least 1 uppercase letter, 1 lowercase
+                            letter, 1 number, and 1 symbol
+                        </small>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Confirm Password *</label>
+                        <div className="password-input-container">
+                            <input
+                                name="confirmPassword"
+                                type={
+                                    showPasswords.confirmPassword
+                                        ? "text"
+                                        : "password"
+                                }
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                placeholder="Confirm your password"
+                                className="form-input"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() =>
+                                    togglePasswordVisibility("confirmPassword")
+                                }
+                            >
+                                <span
+                                    className={`eye-icon ${
+                                        showPasswords.confirmPassword
+                                            ? "eye-slash"
+                                            : "eye-open"
+                                    }`}
+                                ></span>
+                            </button>
+                        </div>
                     </div>
 
                     <button

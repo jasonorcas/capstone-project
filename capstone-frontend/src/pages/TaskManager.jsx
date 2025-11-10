@@ -72,6 +72,39 @@ export default function TaskManager() {
     const API_URL = import.meta.env.VITE_API_URL;
 
     // ---------------------------
+    // Form Validation Function
+    // ---------------------------
+    const validateForm = () => {
+        if (!taskTitle.trim()) {
+            setModalError("Task title is required");
+            scrollToModalTop();
+            return false;
+        }
+
+        if (!taskDeadline) {
+            setModalError("Deadline is required");
+            scrollToModalTop();
+            return false;
+        }
+
+        const selectedDate = new Date(taskDeadline);
+        const now = new Date();
+        if (selectedDate <= now) {
+            setModalError("Deadline must be in the future");
+            scrollToModalTop();
+            return false;
+        }
+
+        if (!taskStatus) {
+            setModalError("Status is required");
+            scrollToModalTop();
+            return false;
+        }
+
+        return true;
+    };
+
+    // ---------------------------
     // Fetch Tasks Function
     // ---------------------------
     const getTasks = async () => {
@@ -240,9 +273,8 @@ export default function TaskManager() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        if (!taskTitle.trim() || !taskDeadline) {
-            setModalError("Task title and deadline are required");
-            scrollToModalTop();
+        // Validate form before submission
+        if (!validateForm()) {
             return;
         }
 
@@ -295,6 +327,11 @@ export default function TaskManager() {
 
         const token = localStorage.getItem("token");
         if (!token) return;
+
+        // Validate form before submission
+        if (!validateForm()) {
+            return;
+        }
 
         setUpdateLoading(true);
         setModalError("");
@@ -778,17 +815,39 @@ export default function TaskManager() {
         }
     };
 
-    // FIXED: Recursive function to render comments with replies as sub-comments
-    const renderCommentsWithReplies = (comments, parentId = null) => {
-        return comments
-            .filter((comment) => comment.parentCommentId === parentId)
-            .map((comment) => (
-                <div
-                    key={comment._id}
-                    className={`comment-item ${
-                        parentId ? "comment-reply" : ""
-                    }`}
-                >
+    // Get parent comment info for replies
+    const getParentCommentInfo = (comment, allComments) => {
+        if (!comment.parentCommentId) return null;
+
+        const parentComment = allComments.find(
+            (c) => c._id === comment.parentCommentId
+        );
+        if (!parentComment) return null;
+
+        return {
+            author: getUserFullName(parentComment.user),
+            content:
+                parentComment.content.length > 50
+                    ? parentComment.content.substring(0, 50) + "..."
+                    : parentComment.content,
+        };
+    };
+
+    // Render comments with reply indicators
+    const renderComments = (comments) => {
+        if (!comments || comments.length === 0) {
+            return (
+                <p className="no-comments text-muted">
+                    No comments yet. Be the first to add one!
+                </p>
+            );
+        }
+
+        return comments.map((comment) => {
+            const parentInfo = getParentCommentInfo(comment, comments);
+
+            return (
+                <div key={comment._id} className="comment-item">
                     <div className="comment-header">
                         <div className="comment-author-info">
                             <strong className="comment-author">
@@ -850,6 +909,16 @@ export default function TaskManager() {
                         )}
                     </div>
 
+                    {/* Show reply indicator if this is a reply */}
+                    {parentInfo && (
+                        <div className="reply-indicator">
+                            <span className="reply-to-text">
+                                Replying to <strong>{parentInfo.author}</strong>
+                                : "{parentInfo.content}"
+                            </span>
+                        </div>
+                    )}
+
                     {editingComment === comment._id ? (
                         <div className="comment-edit-mode">
                             <textarea
@@ -907,12 +976,20 @@ export default function TaskManager() {
                             </div>
                             {replyingTo === comment._id && (
                                 <div className="reply-form">
+                                    <div className="reply-indicator">
+                                        <span className="reply-to-text">
+                                            Replying to{" "}
+                                            <strong>
+                                                {getUserFullName(comment.user)}
+                                            </strong>
+                                        </span>
+                                    </div>
                                     <textarea
                                         value={replyContent}
                                         onChange={(e) =>
                                             setReplyContent(e.target.value)
                                         }
-                                        placeholder="Write a reply..."
+                                        placeholder="Write your reply..."
                                         className="form-input form-textarea"
                                         rows="2"
                                     />
@@ -944,13 +1021,11 @@ export default function TaskManager() {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Recursively render replies as sub-comments */}
-                            {renderCommentsWithReplies(comments, comment._id)}
                         </>
                     )}
                 </div>
-            ));
+            );
+        });
     };
 
     const filteredTasks = tasks.filter((task) => {
@@ -1227,7 +1302,7 @@ export default function TaskManager() {
                                                     </button>
                                                 )}
 
-                                                {/* NEW: View Comments Button */}
+                                                {/* View Comments Button */}
                                                 <button
                                                     onClick={() => {
                                                         openCommentsModal(task);
@@ -1288,6 +1363,7 @@ export default function TaskManager() {
                         </div>
 
                         <div className="modal-body" ref={modalBodyRef}>
+                            {/* Modal Error Display - Shows at top of modal */}
                             {modalError && (
                                 <div className="modal-error-message">
                                     {modalError}
@@ -1297,6 +1373,7 @@ export default function TaskManager() {
                             <form
                                 onSubmit={handleFormSubmit}
                                 className="task-form"
+                                noValidate
                             >
                                 <div className="task-detail-section">
                                     <h3>Task Details</h3>
@@ -1337,7 +1414,6 @@ export default function TaskManager() {
                                             }
                                             placeholder="What needs to be done?"
                                             className="form-input"
-                                            required
                                             disabled={!isCreating}
                                         />
                                         {!isCreating && (
@@ -1387,7 +1463,6 @@ export default function TaskManager() {
                                                         )
                                                     }
                                                     className="form-input datetime-input"
-                                                    required
                                                 />
                                                 <div className="deadline-hint">
                                                     Select date and time
@@ -1569,6 +1644,7 @@ export default function TaskManager() {
                         </div>
 
                         <div className="modal-body" ref={commentsModalBodyRef}>
+                            {/* Modal Error Display - Shows at top of modal */}
                             {modalError && (
                                 <div className="modal-error-message">
                                     {modalError}
@@ -1649,19 +1725,11 @@ export default function TaskManager() {
                                         </button>
                                     </div>
 
-                                    {selectedTask.comments &&
-                                    selectedTask.comments.length > 0 ? (
-                                        <div className="comments-list">
-                                            {renderCommentsWithReplies(
-                                                selectedTask.comments
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <p className="no-comments text-muted">
-                                            No comments yet. Be the first to add
-                                            one!
-                                        </p>
-                                    )}
+                                    <div className="comments-list">
+                                        {renderComments(
+                                            selectedTask.comments || []
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
